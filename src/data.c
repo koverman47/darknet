@@ -13,8 +13,11 @@ list *get_paths(char *filename)
 {
     char *path;
     FILE *file = fopen(filename, "r");
-    if(!file) file_error(filename);
-    list *lines = make_list();
+    if(!file) {
+		perror("fopen");
+		file_error(filename);
+	}
+	list *lines = make_list();
     while((path=fgetl(file))){
         list_insert(lines, path);
     }
@@ -138,7 +141,10 @@ matrix load_image_augment_paths(char **paths, int n, int min, int max, int size,
 box_label *read_boxes(char *filename, int *n)
 {
     FILE *file = fopen(filename, "r");
-    if(!file) file_error(filename);
+    if(!file) {
+		printf("data.c ~ line 146");
+		file_error(filename);
+	}
     float x, y, h, w;
     int id;
     int count = 0;
@@ -216,8 +222,10 @@ void correct_boxes(box_label *boxes, int n, float dx, float dy, float sx, float 
 void fill_truth_swag(char *path, float *truth, int classes, int flip, float dx, float dy, float sx, float sy)
 {
     char labelpath[4096];
+	//printf("\ndata.c ~273 PATH: %s\n",path);
     find_replace(path, "images", "labels", labelpath);
-    find_replace(labelpath, "JPEGImages", "labels", labelpath);
+	find_replace(labelpath, "Images", "labels", labelpath);
+    //find_replace(labelpath, "JPEGImages", "labels", labelpath);
     find_replace(labelpath, ".jpg", ".txt", labelpath);
     find_replace(labelpath, ".JPG", ".txt", labelpath);
     find_replace(labelpath, ".JPEG", ".txt", labelpath);
@@ -254,8 +262,10 @@ void fill_truth_swag(char *path, float *truth, int classes, int flip, float dx, 
 void fill_truth_region(char *path, float *truth, int classes, int num_boxes, int flip, float dx, float dy, float sx, float sy)
 {
     char labelpath[4096];
+	//printf("\ndata.c ~265 PATH: %s\n",path);
     find_replace(path, "images", "labels", labelpath);
-    find_replace(labelpath, "JPEGImages", "labels", labelpath);
+    find_replace(labelpath, "Images", "labels", labelpath);
+    //find_replace(labelpath, "JPEGImages", "labels", labelpath);
 
     find_replace(labelpath, ".jpg", ".txt", labelpath);
     find_replace(labelpath, ".png", ".txt", labelpath);
@@ -363,13 +373,17 @@ box bound_image(image im)
 void fill_truth_iseg(char *path, int num_boxes, float *truth, int classes, int w, int h, augment_args aug, int flip, int mw, int mh)
 {
     char labelpath[4096];
+	printf("data.c ~377 mask");
     find_replace(path, "images", "mask", labelpath);
     find_replace(labelpath, "JPEGImages", "mask", labelpath);
     find_replace(labelpath, ".jpg", ".txt", labelpath);
     find_replace(labelpath, ".JPG", ".txt", labelpath);
     find_replace(labelpath, ".JPEG", ".txt", labelpath);
     FILE *file = fopen(labelpath, "r");
-    if(!file) file_error(labelpath);
+    if(!file) {
+		printf("data.c ~ line 380");
+		file_error(labelpath);
+	}
     char buff[32788];
     int id;
     int i = 0;
@@ -408,8 +422,10 @@ void fill_truth_iseg(char *path, int num_boxes, float *truth, int classes, int w
 void fill_truth_detection(char *path, int num_boxes, float *truth, int classes, int flip, float dx, float dy, float sx, float sy)
 {
     char labelpath[4096];
+	//printf("\ndata.c ~423 PATH: %s\n",path);
     find_replace(path, "images", "labels", labelpath);
-    find_replace(labelpath, "JPEGImages", "labels", labelpath);
+    find_replace(labelpath, "Images", "labels", labelpath);
+    //find_replace(labelpath, "JPEGImages", "labels", labelpath);
 
     find_replace(labelpath, "raw", "labels", labelpath);
     find_replace(labelpath, ".jpg", ".txt", labelpath);
@@ -644,7 +660,10 @@ image get_segmentation_image(char *path, int w, int h, int classes)
     find_replace(labelpath, ".JPEG", ".txt", labelpath);
     image mask = make_image(w, h, classes);
     FILE *file = fopen(labelpath, "r");
-    if(!file) file_error(labelpath);
+    if(!file) {
+		printf("data.c ~ line 658");
+		file_error(labelpath);
+	}
     char buff[32788];
     int id;
     image part = make_image(w, h, 1);
@@ -675,7 +694,10 @@ image get_segmentation_image2(char *path, int w, int h, int classes)
         mask.data[w*h*classes + i] = 1;
     }
     FILE *file = fopen(labelpath, "r");
-    if(!file) file_error(labelpath);
+    if(!file) {
+		printf("data.c ~line 692");
+		file_error(labelpath);
+	}
     char buff[32788];
     int id;
     image part = make_image(w, h, 1);
@@ -1348,7 +1370,10 @@ data load_cifar10_data(char *filename)
     d.y = y;
 
     FILE *fp = fopen(filename, "rb");
-    if(!fp) file_error(filename);
+    if(!fp) {
+		printf("data.c ~ line 1368");
+		file_error(filename);
+	}
     for(i = 0; i < 10000; ++i){
         unsigned char bytes[3073];
         fread(bytes, 1, 3073, fp);
@@ -1411,7 +1436,10 @@ data load_all_cifar10()
         char buff[256];
         sprintf(buff, "data/cifar/cifar-10-batches-bin/data_batch_%d.bin", b+1);
         FILE *fp = fopen(buff, "rb");
-        if(!fp) file_error(buff);
+        if(!fp) {
+			printf("data.c ~ line 1434");
+			file_error(buff);
+		}
         for(i = 0; i < 10000; ++i){
             unsigned char bytes[3073];
             fread(bytes, 1, 3073, fp);
@@ -1436,7 +1464,10 @@ data load_go(char *filename)
     matrix y = make_matrix(3363059, 361);
     int row, col;
 
-    if(!fp) file_error(filename);
+    if(!fp) {
+		printf("data.c ~line 1462");
+		file_error(filename);
+	}
     char *label;
     int count = 0;
     while((label = fgetl(fp))){

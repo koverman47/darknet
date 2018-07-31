@@ -141,6 +141,14 @@ void train_classifier(char *datacfg, char *cfgfile, char *weightfile, int *gpus,
 #endif
         if(avg_loss == -1) avg_loss = loss;
         avg_loss = avg_loss*.9 + loss*.1;
+		if(avg_loss != avg_loss) {
+			printf("\nAverage != Average: TRUE\n");
+			exit(0);
+		}
+		else if(avg_loss < 5) {
+			printf("\nAverage is less than 5\n");
+			save_weights(net, "msu-backup-best.weights");
+		}
         printf("%ld, %.3f: %f, %f avg, %f rate, %lf seconds, %ld images\n", get_current_batch(net), (float)(*net->seen)/N, loss, avg_loss, get_current_rate(net), what_time_is_it_now()-time, *net->seen);
         free_data(train);
         if(*net->seen/N > epoch){

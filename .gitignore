@@ -25,3 +25,12 @@ ehthumbs.db
 Icon?
 Thumbs.db
 *.swp
+
+VOCdevkit/
+MSUPool/
+backup/
+bad.list
+*.so
+*.a
+*.weights
+*.conv.*

@@ -309,6 +309,8 @@ layer parse_yolo(list *options, size_params params)
     char *a = option_find_str(options, "mask", 0);
     int *mask = parse_yolo_mask(a, &num);
     layer l = make_yolo_layer(params.batch, params.w, params.h, num, total, mask, classes);
+	printf("\nl outputs: %d\n", l.outputs);
+	printf("\nparams inputs: %d\n", params.inputs);
     assert(l.outputs == params.inputs);
 
     l.max_boxes = option_find_int_quiet(options, "max",90);

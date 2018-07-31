@@ -1,4 +1,5 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 #include "network.h"
 #include "detection_layer.h"
@@ -12,7 +13,7 @@ void train_compare(char *cfgfile, char *weightfile)
     srand(time(0));
     float avg_loss = -1;
     char *base = basecfg(cfgfile);
-    char *backup_directory = "/home/pjreddie/backup/";
+    char *backup_directory = "/home/robosub/Desktop/tests/darknet/backup/";
     printf("%s\n", base);
     network net = parse_network_cfg(cfgfile);
     if(weightfile){
@@ -54,7 +55,16 @@ void train_compare(char *cfgfile, char *weightfile)
         float loss = train_network(net, train);
         if(avg_loss == -1) avg_loss = loss;
         avg_loss = avg_loss*.9 + loss*.1;
-        printf("%.3f: %f, %f avg, %lf seconds, %ld images\n", (float)*net.seen/N, loss, avg_loss, sec(clock()-time), *net.seen);
+		average = (float)* net.seen / N;
+		if(average != average) {
+			printf("\nAverage != Average Success...\n");
+			exit(0);
+		}
+		else if(average < 5) {
+			printf("\nAverage is less than 5\n");
+			save_weights(net, "msu-backup-best.weights");
+		}
+        printf("%.3f: %f, %f avg, %lf seconds, %ld images\n", average, loss, avg_loss, sec(clock()-time), *net.seen);
         free_data(train);
         if(i%100 == 0){
             char buff[256];
